@@ -81,3 +81,4 @@ def start_program():
 def stop_program():
     global running  # 使用全局的 running 变量
     running = False  # 设置 running 为 False 来结束 main() 函数
+

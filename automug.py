@@ -53,7 +53,7 @@ def auto_music(game_frame):
 
     # 白色轮廓
     contours_white_list = [
-        get_contours(color_mask, points, mask_keys, white_color)
+        get_contours(color_mask, points, mask_ribbon, white_color)
         for points in [points_z, points_x, points_c, points_v, points_b, points_n]
     ]
 
@@ -62,12 +62,18 @@ def auto_music(game_frame):
     # 设定阈值
     area_threshold = 2500
 
-    # roi[mask_ribbon > 0] = white_color
+    # track_color_mask = np.zeros_like(roi)
+    # mask = create_polygon_mask(track_color_mask, points_n)
+    # mask_keys_track = cv2.bitwise_and(mask_ribbon, mask)
+    # track_color_mask = np.zeros_like(track_color_mask)
+    #
+    # track_color_mask[mask_keys_track > 0] = white_color
+    # roi[mask_ribbon > 0] = gold_color
     # cv2.namedWindow("Color Mask", cv2.WINDOW_NORMAL)
-    # cv2.resizeWindow("Color Mask", 480, 270)
-    # cv2.imshow("Color Mask", roi)
+    # cv2.resizeWindow("Color Mask", 400, 200)
+    # cv2.imshow("Color Mask", track_color_mask)
     # cv2.moveWindow("Color Mask", 0, 0)
-    #cv2.setMouseCallback("Color Mask", mouse_callback)
+    # cv2.setMouseCallback("Color Mask", mouse_callback)
 
     # 遍历轮廓列表和键位列表
     for i, (contours_gold, contours_white, key_position, is_holding) in enumerate(
@@ -133,13 +139,14 @@ def get_contours(color_mask, points, mask_keys, color):
 def process_contours(contours_gold, contours_white, roi_height, area_threshold, key_position, is_holding):
     # 检查白色轮廓
     pressneeded = 0
-    min_area = 4500
+    min_area = 3000
     if not is_holding:
         for contour in contours_white:
             area = cv2.contourArea(contour)
             if area < min_area:  # 面积小于最小面积，跳过此轮廓
                 continue
             pressneeded = 1
+            # print(str(key_position))
     #检查金色轮廓
     for contour in contours_gold:
         M = cv2.moments(contour)
